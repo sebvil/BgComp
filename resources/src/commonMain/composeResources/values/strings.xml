@@ -1,0 +1,128 @@
+<resources>
+
+    <!-- Button text for confirming dialog action -->
+    <string name="ok">Ok</string>
+
+    <!-- Button text for canceling an action or dismissing a dialog -->
+    <string name="cancel_verb">Cancel</string>
+
+    <!-- Section title for game mode selection -->
+    <string name="game_mode">Game Mode</string>
+
+    <!-- Radio button label for points-based game mode -->
+    <string name="points_mode">Points Mode</string>
+
+    <!-- Description for points mode -->
+    <string name="points_mode_description">Play until someone reaches a target score</string>
+
+    <!-- Radio button label for rounds-based game mode -->
+    <string name="rounds_mode">Rounds Mode</string>
+
+    <!-- Description for rounds mode -->
+    <string name="rounds_mode_description">Play a fixed number of rounds</string>
+
+    <!-- Section title for points configuration -->
+    <string name="points_configuration">Points Configuration</string>
+
+    <!-- Label for target points input field -->
+    <string name="target_points">Target Points</string>
+
+    <!-- Label for allowed re-entries input field -->
+    <string name="allowed_reentries">Allowed Re-entries</string>
+
+    <!-- Section title for win condition selection -->
+    <string name="win_condition">Win Condition</string>
+
+    <!-- Radio button label for first to exceed win condition -->
+    <string name="first_to_exceed">First to Exceed</string>
+
+    <!-- Description for first to exceed win condition -->
+    <string name="first_to_exceed_description">Game ends when someone exceeds target points</string>
+
+    <!-- Radio button label for last to reach win condition -->
+    <string name="last_to_reach">Last to Reach</string>
+
+    <!-- Description for last to reach win condition -->
+    <string name="last_to_reach_description">Last player to reach target points wins</string>
+
+    <!-- Section title for rounds configuration -->
+    <string name="rounds_configuration">Rounds Configuration</string>
+
+    <!-- Label for number of rounds input field -->
+    <string name="number_of_rounds">Number of Rounds</string>
+
+    <!-- Section title for players list with player count -->
+    <string name="players_count">Players (%1$d)</string>
+
+    <!-- Content description for remove player button -->
+    <string name="remove_player">Remove player</string>
+
+    <!-- Content description for add player button -->
+    <string name="add_player">Add player</string>
+
+    <!-- Label for player name input field with player number -->
+    <string name="player_number">Player %1$d</string>
+
+    <!-- Button text for starting a new game -->
+    <string name="start_game">Start Game</string>
+
+    <!-- Title for enter points screen with round number -->
+    <string name="enter_points_for_round">Enter Points for Round %1$d</string>
+
+    <!-- Label for hand points input field -->
+    <string name="hand_points">Hand Points</string>
+
+    <!-- Label for hand points display with value -->
+    <string name="hand_points_value">Hand Points: %1$d</string>
+
+    <!-- Label for kombio caller selection -->
+    <string name="kombio_caller">Who Called Kombio?</string>
+
+    <!-- Button text for submitting round scores -->
+    <string name="submit_round">Submit Round</string>
+
+    <!-- Title for game summary screen -->
+    <string name="game_summary">Game Summary</string>
+
+    <!-- Label showing current round number -->
+    <string name="current_round">Current Round: %1$d</string>
+
+    <!-- Label for points mode with target -->
+    <string name="points_mode_target">Points Mode: Target %1$d points</string>
+
+    <!-- Label for rounds mode with total -->
+    <string name="rounds_mode_total">Rounds Mode: %1$d rounds total</string>
+
+    <!-- Text indicating game is over -->
+    <string name="game_over">Game Over!</string>
+
+    <!-- Label showing winner -->
+    <string name="winner">Winner: %1$s</string>
+
+    <!-- Section title for player scores -->
+    <string name="player_scores">Player Scores</string>
+
+    <!-- Label for total score -->
+    <string name="total_score">Total Score</string>
+
+    <!-- Label for inactive player -->
+    <string name="inactive">(Out)</string>
+
+    <!-- Button text for entering points -->
+    <string name="enter_points">Enter Points for Next Round</string>
+
+    <!-- Label for round number in history -->
+    <string name="round_number">Round %1$d</string>
+
+    <!-- Section title for round details -->
+    <string name="round_details">Round Details</string>
+
+    <!-- Label for round total score -->
+    <string name="round_total">Total: %1$d</string>
+
+    <!-- Label for penalty points -->
+    <string name="penalty">Penalty: +%1$d</string>
+
+    <!-- Button text for starting a new game after game over -->
+    <string name="new_game">New Game</string>
+</resources>
