@@ -21,10 +21,10 @@ class ImmutableListSerializer<T>(private val elementSerializer: KSerializer<T>) 
     override val descriptor: SerialDescriptor = listSerializer.descriptor
 
     override fun serialize(encoder: Encoder, value: ImmutableList<T>) {
-        listSerializer.serialize(encoder, value.toList())
+        encoder.encodeSerializableValue(listSerializer, value.toList())
     }
 
     override fun deserialize(decoder: Decoder): ImmutableList<T> {
-        return listSerializer.deserialize(decoder).toImmutableList()
+        return decoder.decodeSerializableValue(listSerializer).toImmutableList()
     }
 }

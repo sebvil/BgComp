@@ -5,9 +5,20 @@ plugins {
 
 kotlin {
     sourceSets {
+
         commonMain.dependencies {
             implementation(libs.kotlinx.collections.immutable)
             implementation(libs.kotlinx.datetime)
         }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+    }
+}
+
+android {
+    testOptions {
+        this.unitTests.isReturnDefaultValues = true
     }
 }

@@ -9,8 +9,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EnterPointsState(
-    val playerNames: SerializableList<String> = persistentListOf(),
-    val handPoints: SerializableList<String> = persistentListOf(),
+    val playerNames: List<String> = persistentListOf(),
+    val handPoints: List<String> = persistentListOf(),
     val kombioCallerIndex: Int = 0,
     val roundNumber: Int = 1,
     val isRestored: Boolean = false,
