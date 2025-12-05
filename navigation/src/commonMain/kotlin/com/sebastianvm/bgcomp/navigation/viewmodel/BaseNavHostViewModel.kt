@@ -10,6 +10,7 @@ import com.sebastianvm.bgcomp.mvvm.BaseViewModel
 import com.sebastianvm.bgcomp.mvvm.MvvmComponentArguments
 import com.sebastianvm.bgcomp.mvvm.MvvmComponentInitializer
 import com.sebastianvm.bgcomp.mvvm.Props
+import com.sebastianvm.bgcomp.mvvm.StateProducerScope
 import com.sebastianvm.bgcomp.mvvm.UiEvents
 import com.sebastianvm.bgcomp.mvvm.ViewModelState
 import com.sebastianvm.bgcomp.mvvm.rememberSerializable
@@ -30,7 +31,8 @@ abstract class BaseNavHostViewModel<ParentProps : Props, ChildrenProps : Props>(
     private val navHostKey = arguments.initialDestination.args
 
     @Composable
-    override fun state(): ViewModelState<NavHostState, NavHostUserAction> {
+    override fun StateProducerScope<NavHostState, NavHostUserAction>.state():
+        ViewModelState<NavHostState, NavHostUserAction> {
         val backstackMap = remember {
             mutableStateMapOf<MvvmComponentArguments, NavHostState.ComponentWithPresentationModes>()
         }

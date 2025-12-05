@@ -5,7 +5,14 @@ import androidx.lifecycle.ViewModel
 
 abstract class BaseViewModel<P : Props, S : UiState, A : UserAction>() : ViewModel() {
 
-    @Composable abstract fun state(): ViewModelState<S, A>
+    @Composable protected abstract fun StateProducerScope<S, A>.state(): ViewModelState<S, A>
 
-    @Composable protected fun rememberUiEvents() = rememberUiEvents<A>()
+    @Composable fun state(): ViewModelState<S, A> = StateProducerScope<S, A>().state()
+}
+
+class StateProducerScope<S : UiState, A : UserAction> {
+
+    val uiEvents = UiEvents<A>()
+
+    fun createState(state: S, handle: (A) -> Unit) = ViewModelState(state, handle, uiEvents)
 }

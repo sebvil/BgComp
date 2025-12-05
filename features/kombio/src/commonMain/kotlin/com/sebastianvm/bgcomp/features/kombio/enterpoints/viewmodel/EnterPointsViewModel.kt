@@ -9,6 +9,7 @@ import com.sebastianvm.bgcomp.features.kombio.model.Round
 import com.sebastianvm.bgcomp.features.kombio.model.calculateRoundScores
 import com.sebastianvm.bgcomp.model.GameMode
 import com.sebastianvm.bgcomp.mvvm.BaseViewModel
+import com.sebastianvm.bgcomp.mvvm.StateProducerScope
 import com.sebastianvm.bgcomp.mvvm.ViewModelState
 import com.sebastianvm.bgcomp.navigation.viewmodel.HasNavigationProps
 import dev.zacsweers.metro.Assisted
@@ -23,7 +24,8 @@ class EnterPointsViewModel(@Assisted private val props: StateFlow<KombioGameHost
     HasNavigationProps by HasNavigationProps.Default(props.value.navigationProps) {
 
     @Composable
-    override fun state(): ViewModelState<EnterPointsState, EnterPointsUserAction> {
+    override fun StateProducerScope<EnterPointsState, EnterPointsUserAction>.state():
+        ViewModelState<EnterPointsState, EnterPointsUserAction> {
         val propsValue by props.collectAsState()
         val playerNames =
             propsValue.game.players
@@ -31,21 +33,19 @@ class EnterPointsViewModel(@Assisted private val props: StateFlow<KombioGameHost
                 .map { it.name }
                 .toPersistentList()
         val scores = propsValue.game.players.map { rememberTextFieldState("") }.toPersistentList()
-        val uiEvents = rememberUiEvents()
-        return ViewModelState(
+        return createState(
             state =
                 EnterPointsState(
                     scores = scores,
                     playerNames = playerNames,
                     roundNumber = propsValue.game.currentRound,
                 ),
-            uiEvents = uiEvents,
             handle = { action ->
                 when (action) {
                     is SubmitRound -> {
                         val game = props.value.game
                         val handPoints = scores.map { it.text.toString().toInt() }
-                        if (handPoints.size != playerNames.size) return@ViewModelState
+                        if (handPoints.size != playerNames.size) return@createState
 
                         val roundScores = calculateRoundScores(handPoints, action.kombioCaller)
 

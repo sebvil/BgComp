@@ -1,21 +1,14 @@
 package com.sebastianvm.bgcomp.mvvm
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.savedstate.serialization.SavedStateConfiguration
-import androidx.savedstate.serialization.decodeFromSavedState
-import androidx.savedstate.serialization.encodeToSavedState
 import com.sebastianvm.bgcomp.designsys.components.AlertDialog
 import com.sebastianvm.bgcomp.resources.Res
 import com.sebastianvm.bgcomp.resources.cancel_verb
 import com.sebastianvm.bgcomp.resources.ok
 import com.sebastianvm.bgcomp.ui.UiString
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.modules.SerializersModule
 

@@ -14,16 +14,15 @@ import com.sebastianvm.bgcomp.featureinterfaces.NewKombioGameArguments
 import com.sebastianvm.bgcomp.features.kombio.newgame.ui.NewKombioGameUi
 import com.sebastianvm.bgcomp.model.GameMode
 import com.sebastianvm.bgcomp.mvvm.BaseViewModel
+import com.sebastianvm.bgcomp.mvvm.StateProducerScope
 import com.sebastianvm.bgcomp.mvvm.ViewModelState
 import com.sebastianvm.bgcomp.mvvm.codegen.MvvmComponent
 import com.sebastianvm.bgcomp.mvvm.rememberSerializable
-import com.sebastianvm.bgcomp.mvvm.rememberUiEvents
 import com.sebastianvm.bgcomp.navigation.viewmodel.HasNavigationProps
 import com.sebastianvm.bgcomp.navigation.viewmodel.NavigationProps
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.modules.plus
 
 @MvvmComponent(argsClass = NewKombioGameArguments::class, uiClass = NewKombioGameUi::class)
 @AssistedInject
@@ -32,8 +31,8 @@ class NewKombioGameViewModel(@Assisted private val props: StateFlow<NavigationPr
     HasNavigationProps by HasNavigationProps.Default(props.value) {
 
     @Composable
-    override fun state(): ViewModelState<NewKombioGameState, NewKombioGameUserAction> {
-
+    override fun StateProducerScope<NewKombioGameState, NewKombioGameUserAction>.state():
+        ViewModelState<NewKombioGameState, NewKombioGameUserAction> {
         val playerNames =
             rememberSaveable(
                 saver =
@@ -53,11 +52,8 @@ class NewKombioGameViewModel(@Assisted private val props: StateFlow<NavigationPr
             }
         var gameMode: GameMode by rememberSerializable { mutableStateOf(GameMode.Points()) }
 
-        val uiEvents = rememberUiEvents()
-
-        return ViewModelState(
+        return createState(
             state = NewKombioGameState(playerNames, gameMode),
-            uiEvents = uiEvents,
             handle = { action ->
                 when (action) {
                     is GameModeDataUpdated -> {

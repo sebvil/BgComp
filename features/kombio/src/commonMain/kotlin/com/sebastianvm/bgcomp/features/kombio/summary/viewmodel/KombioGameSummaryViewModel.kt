@@ -3,13 +3,12 @@ package com.sebastianvm.bgcomp.features.kombio.summary.viewmodel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import com.sebastianvm.bgcomp.featureinterfaces.EnterPointsArguments
 import com.sebastianvm.bgcomp.featureinterfaces.KombioGameSummaryArguments
 import com.sebastianvm.bgcomp.features.kombio.host.KombioGameHostProps
 import com.sebastianvm.bgcomp.features.kombio.summary.ui.KombioGameSummaryUi
 import com.sebastianvm.bgcomp.mvvm.BaseViewModel
-import com.sebastianvm.bgcomp.mvvm.UiEvents
+import com.sebastianvm.bgcomp.mvvm.StateProducerScope
 import com.sebastianvm.bgcomp.mvvm.ViewModelState
 import com.sebastianvm.bgcomp.mvvm.codegen.MvvmComponent
 import com.sebastianvm.bgcomp.navigation.viewmodel.HasNavigationProps
@@ -24,17 +23,17 @@ class KombioGameSummaryViewModel(@Assisted private val props: StateFlow<KombioGa
     HasNavigationProps by HasNavigationProps.Default(props.value.navigationProps) {
 
     @Composable
-    override fun state(): ViewModelState<KombioGameSummaryState, KombioGameSummaryUserAction> {
+    override fun StateProducerScope<KombioGameSummaryState, KombioGameSummaryUserAction>.state():
+        ViewModelState<KombioGameSummaryState, KombioGameSummaryUserAction> {
         val propsValue by props.collectAsState()
-        val uiEvents = remember { UiEvents<KombioGameSummaryUserAction>() }
-        return ViewModelState(
+        return createState(
             state = KombioGameSummaryState(game = propsValue.game),
-            uiEvents = uiEvents,
             handle = { action ->
                 when (action) {
                     EnterPoints -> {
                         navigateTo(EnterPointsArguments)
                     }
+
                     StartNewGame -> {
                         navigateUp()
                     }

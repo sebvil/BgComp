@@ -1,7 +1,6 @@
 package com.sebastianvm.bgcomp.mvvm.codegen
 
 import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.MemberName
 
 /**
  * Constants used throughout the code generation process. Centralizes all class names, member names,
@@ -46,7 +45,6 @@ object Constants {
         val MVVM_COMPONENT_NO_PROPS_FACTORY =
             ClassName(Packages.MVVM, "MvvmComponent", "NoPropsFactory")
     }
-
 
     /** Function and property names used in generated code */
     object Names {
