@@ -3,5 +3,4 @@ package com.sebastianvm.bgcomp.featureinterfaces
 import com.sebastianvm.bgcomp.mvvm.MvvmComponentArguments
 import kotlinx.serialization.Serializable
 
-@Serializable
-data object KombioGameSummaryArguments : MvvmComponentArguments
+@Serializable data object KombioGameSummaryArguments : MvvmComponentArguments

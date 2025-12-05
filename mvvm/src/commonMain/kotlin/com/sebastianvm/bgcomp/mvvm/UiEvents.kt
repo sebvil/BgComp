@@ -1,8 +1,10 @@
 package com.sebastianvm.bgcomp.mvvm
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.sebastianvm.bgcomp.resources.Res
 import com.sebastianvm.bgcomp.resources.cancel_verb
@@ -23,3 +25,5 @@ data class ShowAlertDialog<A : UserAction>(
 
     data class ButtonState<A>(val text: UiString, val action: A?)
 }
+
+@Composable fun <A : UserAction> rememberUiEvents() = remember { UiEvents<A>() }

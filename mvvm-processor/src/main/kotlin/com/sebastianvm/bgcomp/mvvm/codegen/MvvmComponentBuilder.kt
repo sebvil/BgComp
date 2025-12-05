@@ -5,7 +5,6 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.PropertySpec
@@ -150,10 +149,11 @@ class MvvmComponentBuilder(private val info: ViewModelInfo) {
         // Add ViewModelFactory interface (for singleton args)
         addType(
             TypeSpec.funInterfaceBuilder(Constants.Names.VIEW_MODEL_FACTORY_INTERFACE)
+                .addModifiers(KModifier.PUBLIC)
                 .addAnnotation(Constants.ClassNames.METRO_ASSISTED_FACTORY)
                 .addFunction(
                     FunSpec.builder(Constants.Names.CREATE_FUNCTION)
-                        .addModifiers(KModifier.ABSTRACT)
+                        .addModifiers(KModifier.ABSTRACT, KModifier.PUBLIC)
                         .apply {
                             if (info.usesProps()) {
                                 addParameter(
@@ -161,18 +161,6 @@ class MvvmComponentBuilder(private val info: ViewModelInfo) {
                                     Constants.ClassNames.KOTLINX_STATE_FLOW.parameterizedBy(
                                         info.propsClass
                                     ),
-                                )
-                            }
-                        }
-                        .apply {
-                            info.savedStateClasses.forEachIndexed { index, savedStateClass ->
-                                addParameter(
-                                    ParameterSpec.builder(
-                                            "${Constants.Names.SAVED_STATE_PARAMETER}$index",
-                                            Constants.ClassNames.KOTLINX_MUTABLE_STATE_FLOW
-                                                .parameterizedBy(savedStateClass),
-                                        )
-                                        .build()
                                 )
                             }
                         }
@@ -292,10 +280,11 @@ class MvvmComponentBuilder(private val info: ViewModelInfo) {
         // Add ViewModelFactory interface
         addType(
             TypeSpec.funInterfaceBuilder(Constants.Names.VIEW_MODEL_FACTORY_INTERFACE)
+                .addModifiers(KModifier.PUBLIC)
                 .addAnnotation(Constants.ClassNames.METRO_ASSISTED_FACTORY)
                 .addFunction(
                     FunSpec.builder(Constants.Names.CREATE_FUNCTION)
-                        .addModifiers(KModifier.ABSTRACT)
+                        .addModifiers(KModifier.ABSTRACT, KModifier.PUBLIC)
                         .addParameter(Constants.Names.ARGS_PARAMETER, info.argsClass)
                         .apply {
                             if (info.usesProps()) {
@@ -304,18 +293,6 @@ class MvvmComponentBuilder(private val info: ViewModelInfo) {
                                     Constants.ClassNames.KOTLINX_STATE_FLOW.parameterizedBy(
                                         info.propsClass
                                     ),
-                                )
-                            }
-                        }
-                        .apply {
-                            info.savedStateClasses.forEachIndexed { index, savedStateClass ->
-                                addParameter(
-                                    ParameterSpec.builder(
-                                            "${Constants.Names.SAVED_STATE_PARAMETER}$index",
-                                            Constants.ClassNames.KOTLINX_MUTABLE_STATE_FLOW
-                                                .parameterizedBy(savedStateClass),
-                                        )
-                                        .build()
                                 )
                             }
                         }
@@ -347,20 +324,10 @@ class MvvmComponentBuilder(private val info: ViewModelInfo) {
     }
 
     private fun buildContentFunctionBody(): com.squareup.kotlinpoet.CodeBlock {
-        return com.squareup.kotlinpoet.CodeBlock.builder()
-            .apply {
-                if (info.savedStateClasses.isEmpty()) {
-                    // No saved state - simple case
-                    generateContentWithoutSavedState()
-                } else {
-                    // With saved state - generate inline implementation
-                    generateContentWithSavedState()
-                }
-            }
-            .build()
+        return com.squareup.kotlinpoet.CodeBlock.builder().apply { generateContent() }.build()
     }
 
-    private fun com.squareup.kotlinpoet.CodeBlock.Builder.generateContentWithoutSavedState() {
+    private fun com.squareup.kotlinpoet.CodeBlock.Builder.generateContent() {
         // @Suppress("ViewModelInjection")
         addStatement("@Suppress(\"ViewModelInjection\")")
 
@@ -379,6 +346,7 @@ class MvvmComponentBuilder(private val info: ViewModelInfo) {
                 addStatement("viewModelFactory.create()")
             }
         } else {
+            // Assisted pattern - always pass arguments
             if (info.usesProps()) {
                 addStatement("viewModelFactory.create(arguments, props)")
             } else {
@@ -390,100 +358,18 @@ class MvvmComponentBuilder(private val info: ViewModelInfo) {
         addStatement("}")
         addStatement("")
 
-        // Generate Content call
+        // val state = viewModel.state()
+        addStatement("val state = viewModel.state()")
+        addStatement("")
+
+        // Generate Content call with new pattern
         addStatement("com.sebastianvm.bgcomp.mvvm.Content(")
         indent()
-        addStatement("viewModel = viewModel,")
+        addStatement("state = state.state,")
+        addStatement("handle = state.handle,")
+        addStatement("uiEvents = state.uiEvents,")
         addStatement("ui = %T,", info.uiClass)
-        addStatement("modifier = modifier,")
-        unindent()
-        addStatement(")")
-    }
-
-    private fun com.squareup.kotlinpoet.CodeBlock.Builder.generateContentWithSavedState() {
-        // Generate currentSerializersModule and saveStateConfig
-        addStatement(
-            "val currentSerializersModule = com.sebastianvm.bgcomp.mvvm.LocalSerializersModule.current"
-        )
-        addStatement(
-            "val saveStateConfig = androidx.savedstate.serialization.SavedStateConfiguration {"
-        )
-        indent()
-        addStatement("this.serializersModule = currentSerializersModule")
-        unindent()
-        addStatement("}")
-        addStatement("")
-
-        // @Suppress("ViewModelInjection")
-        addStatement("@Suppress(\"ViewModelInjection\")")
-
-        // val viewModel = viewModel(key = arguments.toString()) { ... }
-        addStatement(
-            "val viewModel = androidx.lifecycle.viewmodel.compose.viewModel(key = %L.toString()) {",
-            if (info.isSingleton) info.argsClass.simpleName else "arguments",
-        )
-        indent()
-
-        // val handle = createSavedStateHandle()
-        addStatement(
-            "val handle = %M()",
-            MemberName("androidx.lifecycle", "createSavedStateHandle"),
-        )
-
-        // Generate MutableStateFlow for each saved state
-        info.savedStateClasses.forEachIndexed { index, savedStateClass ->
-            addStatement("")
-            addStatement("val savedState$index = kotlinx.coroutines.flow.MutableStateFlow(")
-            indent()
-            addStatement("handle.get<androidx.savedstate.SavedState>(\"savedState$index\")?.let {")
-            indent()
-            addStatement(
-                "androidx.savedstate.serialization.decodeFromSavedState<%T>(it, configuration = saveStateConfig)",
-                savedStateClass,
-            )
-            unindent()
-            addStatement("} ?: %T()", savedStateClass)
-            unindent()
-            addStatement(")")
-
-            // Set saved state provider
-            addStatement("handle.setSavedStateProvider(\"savedState$index\") {")
-            indent()
-            addStatement(
-                "androidx.savedstate.serialization.encodeToSavedState(savedState$index.value, configuration = saveStateConfig)"
-            )
-            unindent()
-            addStatement("}")
-        }
-
-        addStatement("")
-
-        // Generate viewModelFactory.create(...) call with all saved states
-        val savedStateParams = info.savedStateClasses.indices.joinToString(", ") { "savedState$it" }
-        if (info.isSingleton) {
-            if (info.usesProps()) {
-                addStatement("viewModelFactory.create(props, $savedStateParams)")
-            } else {
-                addStatement("viewModelFactory.create($savedStateParams)")
-            }
-        } else {
-            if (info.usesProps()) {
-                addStatement("viewModelFactory.create(arguments, props, $savedStateParams)")
-            } else {
-                addStatement("viewModelFactory.create(arguments, $savedStateParams)")
-            }
-        }
-
-        unindent()
-        addStatement("}")
-        addStatement("")
-
-        // Generate Content call
-        addStatement("com.sebastianvm.bgcomp.mvvm.Content(")
-        indent()
-        addStatement("viewModel = viewModel,")
-        addStatement("ui = %T,", info.uiClass)
-        addStatement("modifier = modifier,")
+        addStatement("modifier = modifier")
         unindent()
         addStatement(")")
     }

@@ -23,21 +23,18 @@ object HomeUi : Ui<HomeState, HomeUserAction> {
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun invoke(state: HomeState, handle: (HomeUserAction) -> Unit, modifier: Modifier) {
-        Scaffold(
-            modifier = modifier.fillMaxSize().padding(vertical = 16.dp),
-        ) { paddingValues ->
+        Scaffold(modifier = modifier.fillMaxSize().padding(vertical = 16.dp)) { paddingValues ->
             LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
+                modifier =
+                    Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 items(state.games) {
                     Button(
                         text = UiString(it.displayName),
-                        onClick = {
-                            handle(GameClicked(it))
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                        onClick = { handle(GameClicked(it)) },
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }

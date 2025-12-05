@@ -5,5 +5,5 @@ import com.sebastianvm.bgcomp.mvvm.MvvmComponentArguments
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class KombioGameHostArguments(val gameMode: GameMode, val playerNames: List<String>) : MvvmComponentArguments
-
+data class KombioGameHostArguments(val gameMode: GameMode, val playerNames: List<String>) :
+    MvvmComponentArguments

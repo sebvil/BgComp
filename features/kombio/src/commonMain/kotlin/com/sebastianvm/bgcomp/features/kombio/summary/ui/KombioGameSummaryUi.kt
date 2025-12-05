@@ -19,11 +19,11 @@ import com.sebastianvm.bgcomp.designsys.components.ListItem
 import com.sebastianvm.bgcomp.designsys.components.Scaffold
 import com.sebastianvm.bgcomp.designsys.components.Text
 import com.sebastianvm.bgcomp.designsys.theme.BgCompTheme
-import com.sebastianvm.bgcomp.model.GameMode
 import com.sebastianvm.bgcomp.features.kombio.summary.viewmodel.EnterPoints
 import com.sebastianvm.bgcomp.features.kombio.summary.viewmodel.KombioGameSummaryState
 import com.sebastianvm.bgcomp.features.kombio.summary.viewmodel.KombioGameSummaryUserAction
 import com.sebastianvm.bgcomp.features.kombio.summary.viewmodel.StartNewGame
+import com.sebastianvm.bgcomp.model.GameMode
 import com.sebastianvm.bgcomp.mvvm.Ui
 import com.sebastianvm.bgcomp.resources.Res
 import com.sebastianvm.bgcomp.resources.current_round
@@ -49,40 +49,47 @@ object KombioGameSummaryUi : Ui<KombioGameSummaryState, KombioGameSummaryUserAct
     override fun invoke(
         state: KombioGameSummaryState,
         handle: (KombioGameSummaryUserAction) -> Unit,
-        modifier: Modifier
+        modifier: Modifier,
     ) {
         val game = state.game ?: return
 
-        Scaffold(
-            modifier = modifier.fillMaxSize().padding(vertical = 16.dp),
-        ) { paddingValues ->
+        Scaffold(modifier = modifier.fillMaxSize().padding(vertical = 16.dp)) { paddingValues ->
             Column(
-                modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier =
+                    Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
                     text = UiString(Res.string.game_summary),
                     style = BgCompTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
 
                 LazyColumn(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     item {
                         Card(modifier = Modifier.fillMaxWidth()) {
                             when (val mode = game.gameMode) {
                                 is GameMode.Points -> {
                                     Text(
-                                        text = stringResource(Res.string.points_mode_target, mode.points),
-                                        style = BgCompTheme.typography.titleMedium
+                                        text =
+                                            stringResource(
+                                                Res.string.points_mode_target,
+                                                mode.points,
+                                            ),
+                                        style = BgCompTheme.typography.titleMedium,
                                     )
                                 }
                                 is GameMode.Rounds -> {
                                     Text(
-                                        text = stringResource(Res.string.rounds_mode_total, mode.rounds),
-                                        style = BgCompTheme.typography.titleMedium
+                                        text =
+                                            stringResource(
+                                                Res.string.rounds_mode_total,
+                                                mode.rounds,
+                                            ),
+                                        style = BgCompTheme.typography.titleMedium,
                                     )
                                 }
                                 else -> Unit
@@ -92,20 +99,21 @@ object KombioGameSummaryUi : Ui<KombioGameSummaryState, KombioGameSummaryUserAct
                                 Text(
                                     text = UiString(Res.string.game_over),
                                     style = BgCompTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(top = 8.dp)
+                                    modifier = Modifier.padding(top = 8.dp),
                                 )
                                 game.winner?.let { winner ->
                                     Text(
                                         text = stringResource(Res.string.winner, winner.name),
                                         style = BgCompTheme.typography.titleLarge,
-                                        modifier = Modifier.padding(top = 8.dp)
+                                        modifier = Modifier.padding(top = 8.dp),
                                     )
                                 }
                             } else {
                                 Text(
-                                    text = stringResource(Res.string.current_round, game.currentRound),
+                                    text =
+                                        stringResource(Res.string.current_round, game.currentRound),
                                     style = BgCompTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(top = 8.dp)
+                                    modifier = Modifier.padding(top = 8.dp),
                                 )
                             }
                         }
@@ -116,31 +124,33 @@ object KombioGameSummaryUi : Ui<KombioGameSummaryState, KombioGameSummaryUserAct
                             Text(
                                 text = UiString(Res.string.player_scores),
                                 style = BgCompTheme.typography.titleMedium,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier.padding(bottom = 8.dp),
                             )
 
-                            game.players.sortedBy { it.totalScore }.forEach { player ->
-                                ListItem(
-                                    headlineContent = { Text(player.name) },
-                                    trailingContent = {
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                text = player.totalScore.toString(),
-                                                style = BgCompTheme.typography.titleMedium
-                                            )
-                                            if (!player.isActive) {
+                            game.players
+                                .sortedBy { it.totalScore }
+                                .forEach { player ->
+                                    ListItem(
+                                        headlineContent = { Text(player.name) },
+                                        trailingContent = {
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                            ) {
                                                 Text(
-                                                    text = UiString(Res.string.inactive),
-                                                    style = BgCompTheme.typography.bodySmall
+                                                    text = player.totalScore.toString(),
+                                                    style = BgCompTheme.typography.titleMedium,
                                                 )
+                                                if (!player.isActive) {
+                                                    Text(
+                                                        text = UiString(Res.string.inactive),
+                                                        style = BgCompTheme.typography.bodySmall,
+                                                    )
+                                                }
                                             }
-                                        }
-                                    }
-                                )
-                            }
+                                        },
+                                    )
+                                }
                         }
                     }
 
@@ -149,42 +159,58 @@ object KombioGameSummaryUi : Ui<KombioGameSummaryState, KombioGameSummaryUserAct
                             Text(
                                 text = stringResource(Res.string.round_number, round.roundNumber),
                                 style = BgCompTheme.typography.titleMedium,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier.padding(bottom = 8.dp),
                             )
 
                             Text(
                                 text = UiString(Res.string.round_details),
                                 style = BgCompTheme.typography.labelLarge,
-                                modifier = Modifier.padding(bottom = 4.dp)
+                                modifier = Modifier.padding(bottom = 4.dp),
                             )
 
                             round.playerScores.forEach { score ->
-                                Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                                ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.SpaceBetween,
                                     ) {
                                         Text(
-                                            text = score.playerName + if (score.calledKombio) " (K)" else "",
-                                            style = BgCompTheme.typography.bodyLarge
+                                            text =
+                                                score.playerName +
+                                                    if (score.calledKombio) " (K)" else "",
+                                            style = BgCompTheme.typography.bodyLarge,
                                         )
                                         Text(
-                                            text = stringResource(Res.string.round_total, score.totalRoundScore),
-                                            style = BgCompTheme.typography.bodyLarge
+                                            text =
+                                                stringResource(
+                                                    Res.string.round_total,
+                                                    score.totalRoundScore,
+                                                ),
+                                            style = BgCompTheme.typography.bodyLarge,
                                         )
                                     }
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                        horizontalArrangement = Arrangement.SpaceBetween,
                                     ) {
                                         Text(
-                                            text = stringResource(Res.string.hand_points_value, score.handPoints),
-                                            style = BgCompTheme.typography.bodySmall
+                                            text =
+                                                stringResource(
+                                                    Res.string.hand_points_value,
+                                                    score.handPoints,
+                                                ),
+                                            style = BgCompTheme.typography.bodySmall,
                                         )
                                         if (score.penalty != 0) {
                                             Text(
-                                                text = stringResource(Res.string.penalty, score.penalty),
-                                                style = BgCompTheme.typography.bodySmall
+                                                text =
+                                                    stringResource(
+                                                        Res.string.penalty,
+                                                        score.penalty,
+                                                    ),
+                                                style = BgCompTheme.typography.bodySmall,
                                             )
                                         }
                                     }
@@ -199,13 +225,13 @@ object KombioGameSummaryUi : Ui<KombioGameSummaryState, KombioGameSummaryUserAct
                     Button(
                         text = UiString(Res.string.enter_points),
                         onClick = { handle(EnterPoints) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 } else {
                     Button(
                         text = UiString(Res.string.new_game),
                         onClick = { handle(StartNewGame) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }

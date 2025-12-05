@@ -2,18 +2,15 @@ package com.sebastianvm.bgcomp.features.kombio.enterpoints.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
@@ -23,15 +20,13 @@ import androidx.compose.ui.unit.dp
 import com.sebastianvm.bgcomp.designsys.components.Button
 import com.sebastianvm.bgcomp.designsys.components.Card
 import com.sebastianvm.bgcomp.designsys.components.ListItem
-import com.sebastianvm.bgcomp.designsys.components.OutlinedTextField
+import com.sebastianvm.bgcomp.designsys.components.NumberOutlinedTextField
 import com.sebastianvm.bgcomp.designsys.components.RadioButton
 import com.sebastianvm.bgcomp.designsys.components.Scaffold
 import com.sebastianvm.bgcomp.designsys.components.Text
 import com.sebastianvm.bgcomp.designsys.theme.BgCompTheme
 import com.sebastianvm.bgcomp.features.kombio.enterpoints.viewmodel.EnterPointsState
 import com.sebastianvm.bgcomp.features.kombio.enterpoints.viewmodel.EnterPointsUserAction
-import com.sebastianvm.bgcomp.features.kombio.enterpoints.viewmodel.HandPointsChanged
-import com.sebastianvm.bgcomp.features.kombio.enterpoints.viewmodel.KombioCallerSelected
 import com.sebastianvm.bgcomp.features.kombio.enterpoints.viewmodel.SubmitRound
 import com.sebastianvm.bgcomp.mvvm.Ui
 import com.sebastianvm.bgcomp.resources.Res
@@ -44,52 +39,62 @@ import org.jetbrains.compose.resources.stringResource
 
 object EnterPointsUi : Ui<EnterPointsState, EnterPointsUserAction> {
     @Composable
-    override fun invoke(state: EnterPointsState, handle: (EnterPointsUserAction) -> Unit, modifier: Modifier) {
-        Scaffold(
-            modifier = modifier.fillMaxSize().padding(vertical = 16.dp),
-        ) { paddingValues ->
+    override fun invoke(
+        state: EnterPointsState,
+        handle: (EnterPointsUserAction) -> Unit,
+        modifier: Modifier,
+    ) {
+        Scaffold(modifier = modifier.fillMaxSize().padding(vertical = 16.dp)) { paddingValues ->
             Column(
-                modifier = Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                modifier =
+                    Modifier.fillMaxSize().padding(paddingValues).padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Text(
                     text = stringResource(Res.string.enter_points_for_round, state.roundNumber),
                     style = BgCompTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    modifier = Modifier.padding(bottom = 8.dp),
                 )
+
+                val scores = state.scores
+                val kombioCallerIndex = rememberSaveable { mutableIntStateOf(0) }
 
                 LazyColumn(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     itemsIndexed(
                         items = state.playerNames,
-                        key = { index, _ -> "player_$index" }
+                        key = { index, _ -> "player_$index" },
                     ) { index, playerName ->
-                        val score = remember { mutableStateOf(state.handPoints[index]) }
+                        val score = scores[index]
                         Card(modifier = Modifier.fillMaxWidth()) {
                             Column {
                                 Text(
                                     text = playerName,
                                     style = BgCompTheme.typography.titleMedium,
-                                    modifier = Modifier.padding(bottom = 8.dp)
+                                    modifier = Modifier.padding(bottom = 8.dp),
                                 )
                                 val focusManager = LocalFocusManager.current
 
-                                OutlinedTextField(
-                                    value = score.value,
-                                    onValueChange = { newValue ->
-                                        score.value = newValue
-                                        handle(HandPointsChanged(index, newValue))
-                                    },
+                                NumberOutlinedTextField(
+                                    state = score,
                                     label = { Text(UiString(Res.string.hand_points)) },
-                                    keyboardOptions = KeyboardOptions(
-                                        keyboardType = KeyboardType.Number,
-                                        imeAction = if (index == state.playerNames.lastIndex) ImeAction.Done else ImeAction.Next
-                                    ),
-                                    keyboardActions = KeyboardActions(
-                                        onNext = { focusManager.moveFocus(FocusDirection.Next) },
-                                        onDone = { focusManager.clearFocus() }),
+                                    keyboardOptions =
+                                        KeyboardOptions(
+                                            keyboardType = KeyboardType.Number,
+                                            imeAction =
+                                                if (index == state.playerNames.lastIndex)
+                                                    ImeAction.Done
+                                                else ImeAction.Next,
+                                        ),
+                                    onKeyboardAction = {
+                                        if (index == state.playerNames.lastIndex) {
+                                            focusManager.clearFocus()
+                                        } else {
+                                            focusManager.moveFocus(FocusDirection.Next)
+                                        }
+                                    },
                                     modifier = Modifier.fillMaxWidth(),
                                     singleLine = true,
                                 )
@@ -102,7 +107,7 @@ object EnterPointsUi : Ui<EnterPointsState, EnterPointsUserAction> {
                             Text(
                                 text = UiString(Res.string.kombio_caller),
                                 style = BgCompTheme.typography.titleMedium,
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier.padding(bottom = 8.dp),
                             )
 
                             state.playerNames.forEachIndexed { index, playerName ->
@@ -110,10 +115,10 @@ object EnterPointsUi : Ui<EnterPointsState, EnterPointsUserAction> {
                                     headlineContent = { Text(playerName) },
                                     leadingContent = {
                                         RadioButton(
-                                            selected = state.kombioCallerIndex == index,
-                                            onClick = { handle(KombioCallerSelected(index)) }
+                                            selected = kombioCallerIndex.intValue == index,
+                                            onClick = { kombioCallerIndex.intValue = index },
                                         )
-                                    }
+                                    },
                                 )
                             }
                         }
@@ -122,9 +127,16 @@ object EnterPointsUi : Ui<EnterPointsState, EnterPointsUserAction> {
 
                 Button(
                     text = UiString(Res.string.submit_round),
-                    onClick = { handle(SubmitRound) },
+                    onClick = {
+                        handle(
+                            SubmitRound(
+                                scores = scores.map { it.text.toString().toInt() },
+                                kombioCaller = kombioCallerIndex.value,
+                            )
+                        )
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = state.canSubmit
+                    enabled = scores.all { it.text.isNotBlank() },
                 )
             }
         }
