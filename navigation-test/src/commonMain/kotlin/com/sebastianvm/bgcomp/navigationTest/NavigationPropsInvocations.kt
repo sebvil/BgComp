@@ -1,6 +1,5 @@
 package com.sebastianvm.bgcomp.navigationTest
 
-import com.sebastianvm.bgcomp.mvvm.BaseViewModel
 import com.sebastianvm.bgcomp.mvvm.asCloseable
 import com.sebastianvm.bgcomp.navigation.NavDestination
 import com.sebastianvm.bgcomp.navigation.viewmodel.NavigationProps
@@ -8,7 +7,6 @@ import com.sebastianvm.bgcomp.testing.di.TestAppGraph
 import de.infix.testBalloon.framework.core.TestExecutionScope
 import de.infix.testBalloon.framework.core.TestSuite
 import de.infix.testBalloon.framework.shared.TestRegistering
-import dev.zacsweers.metro.createGraphFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,7 +45,7 @@ val popInvocations: List<Unit>
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @TestRegistering
-inline fun <VM : BaseViewModel<*, *, *>> TestSuite.viewModelTest(
+inline fun <VM : OldBaseViewModel<*, *, *>> TestSuite.viewModelTest(
     name: String,
     crossinline configure:
         suspend context(TestExecutionScope, TestAppGraph)

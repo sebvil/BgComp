@@ -5,4 +5,5 @@ import com.sebastianvm.bgcomp.mvvm.UserAction
 sealed interface KombioGameSummaryUserAction : UserAction
 
 data object EnterPoints : KombioGameSummaryUserAction
+
 data object StartNewGame : KombioGameSummaryUserAction

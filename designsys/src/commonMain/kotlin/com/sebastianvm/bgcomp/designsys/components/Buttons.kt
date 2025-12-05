@@ -12,12 +12,5 @@ fun Button(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
 ) {
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled,
-    ) {
-        Text(text = text)
-    }
+    Button(onClick = onClick, modifier = modifier, enabled = enabled) { Text(text = text) }
 }
-

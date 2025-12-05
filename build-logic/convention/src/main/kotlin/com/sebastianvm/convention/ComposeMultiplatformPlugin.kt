@@ -9,7 +9,6 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -46,9 +45,7 @@ class ComposeMultiplatformPlugin : Plugin<Project> {
             dependencies { add("debugImplementation", libs.library("compose.ui.tooling")) }
 
             configure<ComposeCompilerGradlePluginExtension> {
-                this.stabilityConfigurationFiles.add {
-                    file("$rootDir/compose_stability.conf")
-                }
+                this.stabilityConfigurationFiles.add { file("$rootDir/compose_stability.conf") }
             }
         }
     }

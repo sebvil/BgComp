@@ -1,7 +1,6 @@
 package com.sebastianvm.bgcomp.common.serialization
 
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 
 /**
@@ -15,8 +14,8 @@ import kotlinx.serialization.Serializable
  * )
  * ```
  *
- * This uses contextual serialization with [ImmutableListSerializer].
- * Make sure to register the serializer in your SerializersModule.
+ * This uses contextual serialization with [ImmutableListSerializer]. Make sure to register the
+ * serializer in your SerializersModule.
  */
 typealias SerializableList<T> =
     @Serializable(with = ImmutableListSerializer::class) ImmutableList<T>
